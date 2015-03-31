@@ -9,7 +9,7 @@ var version = require('./package.json').version;
 var bodyparser = require('body-parser');
 var compress = require('compression');
 var Bill = require('./controllers/bill.js');
-//var CPT = require('');
+var CPT = require('./controllers/cpt.js');
 
 require('./db/connection.js');
 
