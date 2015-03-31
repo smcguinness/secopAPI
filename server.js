@@ -21,10 +21,6 @@ app.use(bodyparser.urlencoded({
 app.use(bodyparser.json());
 app.use(cookieParser());
 
-app.get('/', function(req, res) {
-  res.send('you suck');
-});
-
 app.listen(port, function() {
   console.log('listening on ', port);
 });

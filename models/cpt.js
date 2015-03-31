@@ -9,6 +9,7 @@ var Q = require('q');
 
 
 var CPT = mongoose.model('CPT', new Schema({
+  
 }));
 
 module.export = CPT;
