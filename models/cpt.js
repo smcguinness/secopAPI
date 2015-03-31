@@ -11,7 +11,8 @@ var Q = require('q');
 
 var CPT = db.model('CPT', new Schema({
   code: String,
-  description: String
+  description: String,
+  priority: Number
 }));
 
 module.exports = CPT;
