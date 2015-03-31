@@ -13,6 +13,13 @@ var CPT = require('./controllers/cpt.js');
 
 require('./db/connection.js');
 
+app.get('/bills/:id', Bill.single);
+app.post('/bills', Bill.insertNew);
+app.get('/bills', Bill.index);
+
+app.get('/cpt/codes/:id', CPT.single);
+app.post('/cpt/search', CPT.search);
+
 app.use(compress());
 app.use(bodyparser.urlencoded({
   extended: false
