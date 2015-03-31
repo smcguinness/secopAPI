@@ -8,6 +8,8 @@ var port = process.env.PORT || 8000;
 var version = require('./package.json').version;
 var bodyparser = require('body-parser');
 var compress = require('compression');
+var Bill = require('./controllers/bill.js');
+//var CPT = require('');
 
 require('./db/connection.js');
 
