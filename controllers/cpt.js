@@ -22,7 +22,7 @@ module.exports = {
 		.find({code: new RegExp(code, "gi"),
 			description: new RegExp(description, "gi")},
 			{_id: 0, code: 1, description: 1},
-			{skip: page * pagesize, limit: pagesize})
+			{skip: (page - 1) * pagesize, limit: pagesize})
 		.sort({priority: -1, code: 1})
 		.then(function(data){res.send(data)});
   }
