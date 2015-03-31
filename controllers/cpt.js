@@ -8,7 +8,6 @@ module.exports = {
   },
 
   search: function(req, res, next) {
-    console.log('here');
     var code = req.body.code;
     var description = req.body.description;
     var page = req.body.page;
