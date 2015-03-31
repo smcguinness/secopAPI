@@ -26,7 +26,7 @@ module.exports = {
         code: 1,
         description: 1
       }, {
-        skip: page * pagesize,
+        skip: (page - 1) * pagesize,
         limit: pagesize
       })
       .sort({
