@@ -1,7 +1,6 @@
 'use strict';
 var Bill = require('../models/bill.js');
 var CPT = require('../models/cpt.js');
-var async = require('async');
 
 module.exports = {
 
@@ -25,52 +24,73 @@ module.exports = {
     }
 
     var cptError;
+    var codes = [];
 
-    var codes = billData.procedures.map(function(procedure) {
-      if(!procedure.cpt) {
-        cptError = true;
+    var codeHashMap = {};
+
+    for(var i = 0; i < billData.procedures.length; i++) {
+      var cpt = billData.procedures[i].cpt;
+      if(!cpt) {
+        return res.status(404).send({
+          message: 'You must include a cpt for your procedure.'
+        });
+        break;
       }
-      return procedure.cpt;
-    });
-
-    if(cptError) {
-      return res.status(404).send({
-        message: 'You must include a cpt for your procedure.'
-      });
+      if(!codeHashMap[cpt]) {
+        codeHashMap[cpt] = true;
+        codes.push({
+          code: cpt
+        });
+      }
     }
 
-    async.each(codes, function(code, cb) {
-      CPT.findOne({
-        code: code
-      }, function(err, foundCPT) {
-        if(err || !foundCPT) {
-          cb({
-            message: code + ' appears to be an invalid code.'
-          });
-        } else {
-          cb();
-        }
-      });
-    }, function(err) {
-      if(err){
-        return res.status(404).send(err);
-      }
+    var foundCPTids = [];
 
-      var bill = new Bill(billData);
-      bill.save(function(err) {
-        if(err) {
-          var errors = [];
-          for(var index in err.errors) {
-            errors.push(err.errors[index].message);
-          }
-          return res.status(404).send({
-            validationErrors: errors,
-            message: 'One or more of your fields are incorrect.'
-          });
-        }
-        res.status(200).send('Thanks!');
+    CPT.find({
+      $or: codes
+    }, '_id code').execQ()
+    .then(function(foundCodes) {
+      foundCodes.forEach(function(foundCode) {
+        delete codeHashMap[foundCode.code];
+        foundCPTids.push({
+          _id: foundCode._id
+        });
       });
-    });
+      var codesLeft = Object.keys(codeHashMap);
+      if(codesLeft.length) {
+        res.status(404).send({
+          message: codesLeft.join(', ') + ' are note valid codes.'
+        });
+      }
+      var bill = new Bill(billData);
+      return bill.saveQ();
+    })
+    .then(function() {
+      CPT.update({
+        $or: foundCPTids
+      }, {
+        $inc: {
+          priority: 1
+        }
+      }, {
+        multi: true
+      }, function() {});
+      res.status(200).send('Thanks!');
+    })
+    .catch(function(err) {
+      if(err && err.errors) {
+        var errors = [];
+        for(var index in err.errors) {
+          errors.push(err.errors[index].message);
+        }
+        res.status(404).send({
+          validationErrors: errors,
+          message: 'One or more of your fields are incorrect.'
+        });
+      } else {
+        res.status(404).send('Not Found');
+      }
+    })
   },
 
   index: function(req, res, next) {
