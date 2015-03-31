@@ -2,6 +2,7 @@
 var Bill = require('../models/bill.js');
 var CPT = require('../models/cpt.js');
 var async = require('async');
+var url = require('url');
 
 module.exports = {
 
@@ -71,10 +72,7 @@ module.exports = {
         res.status(200).send('Thanks!');
       });
     });
-  },
-
-  index: function(req, res, next) {
-	res.send('index');
   }
+
 };
 
