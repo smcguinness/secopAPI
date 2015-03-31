@@ -9,16 +9,36 @@ var Q = require('q');
 
 var Bill = db.model('Bill', new Schema({
   providerName: String,
-  billDate: {type: Date, required: 'The bill date is required.'},
-  zip: {type: Number, required: 'The zip code is required.'},
+  billDate: {
+    type: Date,
+    required: 'The bill date is required.'
+  },
+  zip: {
+    type: Number,
+    required: 'The zip code is required.'
+  },
   generalDescription: String,
   procedures: [{
     cpt: {
-      code: {type: String, required: 'The CPT code for the procedure is required.'},
-      description: {type: String, required: 'The CPT description for the procedure is required.'},
+      code: {
+        type: String,
+        required: 'The CPT code for the procedure is required.'
+      },
+      description: {
+        type: String,
+        required: 'The CPT description for the procedure is required.'
+      },
     },
-    cost: {type: Number, required: 'The cost of the procedure is required.', min: 0},
-    quantity: {type: Number, default: 1, min: 1}
+    cost: {
+      type: Number,
+      required: 'The cost of the procedure is required.',
+      min: 0
+    },
+    quantity: {
+      type: Number,
+      default: 1,
+      min: 1
+    }
   }]
 }));
 
