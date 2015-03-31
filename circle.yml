@@ -1,0 +1,11 @@
+machine:
+  node:
+    version: v0.10.33
+deployment:
+  staging:
+    branch: develop
+    heroku:
+      appname: test-blackbird-api
+test:
+  override:
+    - echo none
