@@ -10,6 +10,7 @@ var bodyparser = require('body-parser');
 var compress = require('compression');
 var Bill = require('./controllers/bill.js');
 var CPT = require('./controllers/cpt.js');
+var Procedure = require('./controllers/procedure.js');
 
 app.use(compress());
 app.use(bodyparser.urlencoded({
@@ -21,7 +22,7 @@ app.use(cookieParser());
 
 app.get('/bills/:id', Bill.single);
 app.post('/bills', Bill.insertNew);
-app.get('/bills', Bill.index);
+app.post('/procedures/search', Procedure.search);
 
 app.get('/cpt/codes/:id', CPT.single);
 app.post('/cpt/search', CPT.search);
