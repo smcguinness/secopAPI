@@ -8,6 +8,7 @@ module.exports = {
   },
 
   search: function(req, res, next) {
+    console.log('here');
     var code = req.body.code;
     var description = req.body.description;
     var page = req.body.page;
@@ -32,7 +33,7 @@ module.exports = {
       .sort({
         priority: -1,
         code: 1
-      }).exexQ()
+      })
       .then(function(data) {
         res.send(data)
       });
