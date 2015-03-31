@@ -11,6 +11,7 @@ var Bill = db.model('Bill', new Schema({
   docName: {type: String, required: 'The doctor or hospital name is required.'},
   billDate: {type: Date, required: 'The bill date is required.'},
   zip: {type: Number, required: 'The zip code is required.'},
+  generalDescription: String,
   procedures: [{
     cpt: {type: String, required: 'The CPT code for the procedure is required.'},
     cost: {type: Number, required: 'The cost of the procedure is required.', min: 0},

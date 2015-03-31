@@ -13,8 +13,8 @@ module.exports = {
       .then(function (result) {
         res.send(result); 
     }).done();
-},
-
+  },
+  
   insertNew: function(req, res, next) {
     var billData = req.body;
     if(!Array.isArray(billData.procedures) || !billData.procedures.length) {
@@ -48,7 +48,7 @@ module.exports = {
 
     CPT.find({
       $or: codes
-    }, '_id code').execQ()
+    }, '_id code').lean().execQ()
     .then(function(foundCodes) {
       foundCodes.forEach(function(foundCode) {
         delete codeHashMap[foundCode.code];
