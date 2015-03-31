@@ -9,13 +9,13 @@ var Q = require('q');
 
 var Bill = db.model('Bill', new Schema({
   _id: mongoose.Schema.Types.ObjectId,
-  docName: String,
-  billDate: Date,
-  zip: Number,
+  docName: {type: String, required: 'The doctor or hospital name is required.'},
+  billDate: {type: Date, required: 'The bill date is required.'},
+  zip: {type: Number, required: 'The zip code is required.'},
   procedures: [{
-    CPT: String,
-    Cost: Number,
-    who: String //Doctor or hospital
+    CPT: {type: String, required: 'The CPT code is require.'},
+    Cost: {type: Number, required: 'The cost of the procedure is required.'},
+    who: {type: String, required: 'Who did the procedure is required.'} //Doctor or hospital
   }]
 }));
 
