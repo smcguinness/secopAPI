@@ -14,7 +14,7 @@ module.exports = {
         res.send(result); 
     }).done();
   },
-  
+
   insertNew: function(req, res, next) {
     var billData = req.body;
     if(!Array.isArray(billData.procedures) || !billData.procedures.length) {
@@ -94,7 +94,7 @@ module.exports = {
   },
 
   index: function(req, res, next) {
-	res.send('index');
+    res.send('index');
   }
 };
 
