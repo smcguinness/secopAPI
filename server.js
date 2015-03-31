@@ -11,7 +11,7 @@ var compress = require('compression');
 var Bill = require('./controllers/bill.js');
 var CPT = require('./controllers/cpt.js');
 
-require('./db/connection.js');
+CPT.populateDB()
 
 app.use(compress());
 app.use(bodyparser.urlencoded({
