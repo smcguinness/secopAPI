@@ -102,8 +102,6 @@ module.exports = {
           validationErrors: errors,
           message: 'One or more of your fields are incorrect.'
         });
-      } else {
-        res.status(404).send('Not Found');
-      }
     })
+  }
 };
