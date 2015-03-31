@@ -1,8 +1,6 @@
 'use strict';
 var Bill = require('../models/bill.js');
 var CPT = require('../models/cpt.js');
-var async = require('async');
-var url = require('url');
 
 module.exports = {
 
@@ -15,64 +13,92 @@ module.exports = {
       .then(function (result) {
         res.send(result); 
     }).done();
-},
+  },
 
   insertNew: function(req, res, next) {
     var billData = req.body;
     if(!Array.isArray(billData.procedures) || !billData.procedures.length) {
-      return res.status(404).send({
+      return res.status(500).send({
         message: 'You must include at least one procedure.'
       });
     }
 
     var cptError;
+    var codes = [];
 
-    var codes = billData.procedures.map(function(procedure) {
-      if(!procedure.cpt) {
-        cptError = true;
+    var codeHashMap = {};
+
+    for(var i = 0; i < billData.procedures.length; i++) {
+      var cpt = billData.procedures[i].cpt;
+      billData.procedures[i].cpt = {
+        code: cpt
+      };
+      if(!cpt) {
+        return res.status(500).send({
+          message: 'You must include a cpt for your procedure.'
+        });
+        break;
       }
-      return procedure.cpt;
-    });
-
-    if(cptError) {
-      return res.status(404).send({
-        message: 'You must include a cpt for your procedure.'
-      });
+      if(!Array.isArray(codeHashMap[cpt])) {
+        codeHashMap[cpt] = [];
+        codes.push({
+          code: cpt
+        });
+      }
+      codeHashMap[cpt].push(i);
     }
 
-    async.each(codes, function(code, cb) {
-      CPT.findOne({
-        code: code
-      }, function(err, foundCPT) {
-        if(err || !foundCPT) {
-          cb({
-            message: code + ' appears to be an invalid code.'
-          });
-        } else {
-          cb();
-        }
+    var foundCPTids = [];
+
+    CPT.find({
+      $or: codes
+    }).lean().execQ()
+    .then(function(foundCodes) {
+      foundCodes.forEach(function(foundCode) {
+        var codesMap = codeHashMap[foundCode.code];
+        codesMap.forEach(function(procedureIndex) {
+          billData.procedures[procedureIndex].cpt.description = foundCode.description;
+        });
+        delete codeHashMap[foundCode.code];
+        foundCPTids.push({
+          _id: foundCode._id
+        });
       });
-    }, function(err) {
-      if(err){
-        return res.status(404).send(err);
+      var codesLeft = Object.keys(codeHashMap);
+      if(codesLeft.length) {
+        res.status(404).send({
+          message: codesLeft.join(', ') + ' are not valid codes.'
+        });
       }
-
       var bill = new Bill(billData);
-      bill.save(function(err) {
-        if(err) {
-          var errors = [];
-          for(var index in err.errors) {
-            errors.push(err.errors[index].message);
-          }
-          return res.status(404).send({
-            validationErrors: errors,
-            message: 'One or more of your fields are incorrect.'
-          });
+      return bill.saveQ();
+    })
+    .then(function() {
+      CPT.update({
+        $or: foundCPTids
+      }, {
+        $inc: {
+          priority: 1
         }
-        res.status(200).send('Thanks!');
-      });
-    });
+      }, {
+        multi: true
+      }, function() {});
+      res.status(200).send('Thanks!');
+    })
+    .catch(function(err) {
+      if(err && err.errors) {
+        var errors = [];
+        for(var index in err.errors) {
+          errors.push(err.errors[index].message);
+        }
+        res.status(500).send({
+          validationErrors: errors,
+          message: 'One or more of your fields are incorrect.'
+        });
+      } else {
+        res.status(404).send('Not Found');
+      }
+    })
   }
-
 };
 
