@@ -1,5 +1,4 @@
 'use strict';
-
 var Bill = require('../models/bill.js');
 
 module.exports = {
@@ -9,8 +8,11 @@ module.exports = {
 
     Bill
       .findById(id)
-      .exec(function (err, result) { res.send(err); });
-  },
+      .execQ()
+      .then(function (result) {
+        res.send(result); 
+    }).done();
+},
 
   insertNew: function(req, res, next) {
 	res.send('insertNew');
