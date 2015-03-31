@@ -8,6 +8,7 @@ var Q = require('q');
 
 
 var Bill = db.model('Bill', new Schema({
+  _id: mongoose.Schema.Types.ObjectId,
   docName: String,
   billDate: Date,
   zip: Number,
