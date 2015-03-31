@@ -16,7 +16,7 @@ var Bill = db.model('Bill', new Schema({
     cpt: {
       code: {type: String, required: 'The CPT code for the procedure is required.'},
       description: {type: String, required: 'The CPT description for the procedure is required.'},
-    ,
+    },
     cost: {type: Number, required: 'The cost of the procedure is required.', min: 0},
     quantity: {type: Number, default: 1, min: 1}
   }]

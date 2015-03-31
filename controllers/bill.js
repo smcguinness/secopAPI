@@ -30,27 +30,35 @@ module.exports = {
 
     for(var i = 0; i < billData.procedures.length; i++) {
       var cpt = billData.procedures[i].cpt;
+      billData.procedures[i].cpt = {
+        code: cpt
+      };
       if(!cpt) {
         return res.status(500).send({
           message: 'You must include a cpt for your procedure.'
         });
         break;
       }
-      if(!codeHashMap[cpt]) {
-        codeHashMap[cpt] = true;
+      if(!Array.isArray(codeHashMap[cpt])) {
+        codeHashMap[cpt] = [];
         codes.push({
           code: cpt
         });
       }
+      codeHashMap[cpt].push(i);
     }
 
     var foundCPTids = [];
 
     CPT.find({
       $or: codes
-    }, '_id code').lean().execQ()
+    }).lean().execQ()
     .then(function(foundCodes) {
       foundCodes.forEach(function(foundCode) {
+        var codesMap = codeHashMap[foundCode.code];
+        codesMap.forEach(function(procedureIndex) {
+          billData.procedures[procedureIndex].cpt.description = foundCode.description;
+        });
         delete codeHashMap[foundCode.code];
         foundCPTids.push({
           _id: foundCode._id
