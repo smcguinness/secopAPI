@@ -8,14 +8,16 @@ var Q = require('q');
 
 
 var Bill = db.model('Bill', new Schema({
-  docName: {type: String, required: 'The doctor or hospital name is required.'},
+  providerName: String,
   billDate: {type: Date, required: 'The bill date is required.'},
   zip: {type: Number, required: 'The zip code is required.'},
   generalDescription: String,
   procedures: [{
-    cpt: {type: String, required: 'The CPT code for the procedure is required.'},
+    cpt: {
+      code: {type: String, required: 'The CPT code for the procedure is required.'},
+      description: {type: String, required: 'The CPT description for the procedure is required.'},
+    ,
     cost: {type: Number, required: 'The cost of the procedure is required.', min: 0},
-    who: {type: String, required: 'Who did the procedure is required.'}, //Doctor or hospital
     quantity: {type: Number, default: 1, min: 1}
   }]
 }));

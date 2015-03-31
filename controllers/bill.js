@@ -18,7 +18,7 @@ module.exports = {
   insertNew: function(req, res, next) {
     var billData = req.body;
     if(!Array.isArray(billData.procedures) || !billData.procedures.length) {
-      return res.status(404).send({
+      return res.status(500).send({
         message: 'You must include at least one procedure.'
       });
     }
@@ -31,7 +31,7 @@ module.exports = {
     for(var i = 0; i < billData.procedures.length; i++) {
       var cpt = billData.procedures[i].cpt;
       if(!cpt) {
-        return res.status(404).send({
+        return res.status(500).send({
           message: 'You must include a cpt for your procedure.'
         });
         break;
@@ -59,7 +59,7 @@ module.exports = {
       var codesLeft = Object.keys(codeHashMap);
       if(codesLeft.length) {
         res.status(404).send({
-          message: codesLeft.join(', ') + ' are note valid codes.'
+          message: codesLeft.join(', ') + ' are not valid codes.'
         });
       }
       var bill = new Bill(billData);
@@ -83,7 +83,7 @@ module.exports = {
         for(var index in err.errors) {
           errors.push(err.errors[index].message);
         }
-        res.status(404).send({
+        res.status(500).send({
           validationErrors: errors,
           message: 'One or more of your fields are incorrect.'
         });
